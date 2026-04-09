@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base de Conhecimento — A5 ECO</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --purple:#651cf2;--violet:#4418b2;--electric:#7f1def;
+  --black:#080810;--surface:#0f0f1a;--card:#141420;--card2:#1a1a28;
+  --border:#251f4a;--border2:#3d2f8a;
+  --white:#ffffff;--text:#e8e8f0;--sub:#8888aa;--hint:#44445a;
+  --red:#ff4455;--redbg:#1a0810;
+  --yellow:#f5a623;--yellowbg:#1a1005;
+  --green:#3dcc78;--greenbg:#081a10;
+  --orange:#ff8c00;--orangebg:#1a1005;
+}
+html{scroll-behavior:smooth}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;line-height:1.65;min-height:100vh;overflow-x:hidden}
+#canvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(80px);opacity:0.18;animation:orbFloat 8s ease-in-out infinite alternate}
+.orb1{width:500px;height:500px;background:var(--purple);top:-150px;right:-100px;animation-delay:0s}
+.orb2{width:350px;height:350px;background:var(--electric);bottom:-100px;left:-80px;animation-delay:-3s}
+.orb3{width:250px;height:250px;background:var(--violet);top:40%;left:40%;animation-delay:-6s}
+@keyframes orbFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,20px) scale(1.08)}}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px)}
+#progressBar{position:fixed;top:0;left:0;height:2px;z-index:200;background:linear-gradient(90deg,var(--violet),var(--purple),var(--electric));transition:width 0.2s;box-shadow:0 0 12px var(--purple)}
+header{position:relative;z-index:10;background:rgba(8,8,16,0.85);border-bottom:1px solid var(--border);backdrop-filter:blur(20px)}
+.header-inner{max-width:900px;margin:0 auto;padding:22px 40px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.logo-area{display:flex;align-items:center;gap:14px}
+.logo-img{width:44px;height:44px;object-fit:contain;display:block;filter:drop-shadow(0 0 8px rgba(101,28,242,0.6));animation:logoPulse 3s ease-in-out infinite}
+@keyframes logoPulse{0%,100%{filter:drop-shadow(0 0 8px rgba(101,28,242,0.6))}50%{filter:drop-shadow(0 0 16px rgba(127,29,239,0.9))}}
+.logo-name{font-family:'Orbitron',sans-serif;font-size:17px;font-weight:700;letter-spacing:0.05em;color:var(--white)}
+.logo-name span{color:var(--purple)}
+.header-right h1{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.18em;color:var(--white);text-transform:uppercase;text-align:right}
+.header-right p{font-size:11px;color:var(--purple);letter-spacing:0.1em;text-transform:uppercase;margin-top:2px;text-align:right}
+.header-line{height:1px;background:linear-gradient(90deg,transparent,var(--violet),var(--purple),var(--electric),transparent)}
+.wrapper{position:relative;z-index:2;max-width:900px;margin:0 auto;padding:48px 40px 100px}
+.intro-card{background:rgba(20,20,32,0.8);border:1px solid var(--border2);border-left:3px solid var(--purple);border-radius:14px;padding:28px 32px;margin-bottom:14px;backdrop-filter:blur(10px);animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) both}
+@keyframes slideIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+.intro-card h2{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:600;color:var(--purple);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:12px}
+.intro-card p{font-size:14px;color:var(--sub);line-height:1.75;margin-bottom:8px}
+.intro-card p:last-child{margin-bottom:0}
+.intro-card strong{color:var(--text);font-weight:500}
+.intro-card .hl{color:var(--purple);font-weight:500}
+.howto-card{background:rgba(26,26,40,0.7);border:1px solid var(--border);border-radius:10px;padding:18px 26px;margin-bottom:52px;backdrop-filter:blur(8px);animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s both}
+.howto-card h3{font-size:12px;font-weight:500;color:var(--sub);margin-bottom:10px}
+.howto-card ul{list-style:none;display:flex;flex-direction:column;gap:5px}
+.howto-card ul li{font-size:13px;color:var(--hint);padding-left:16px;position:relative}
+.howto-card ul li::before{content:'—';position:absolute;left:0;color:var(--purple)}
+.section{margin-bottom:56px;opacity:0;transform:translateY(28px);transition:opacity 0.6s ease,transform 0.6s cubic-bezier(0.16,1,0.3,1)}
+.section.visible{opacity:1;transform:none}
+.section-header{display:flex;align-items:stretch;margin-bottom:28px;border-radius:8px;overflow:hidden;box-shadow:0 0 30px rgba(101,28,242,0.15)}
+.section-num{background:rgba(0,0,0,0.6);color:var(--white);font-family:'Orbitron',sans-serif;font-size:15px;font-weight:900;width:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border2);border-right:none;border-radius:8px 0 0 8px}
+.section-title{background:linear-gradient(90deg,var(--violet),var(--purple));color:var(--white);font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;padding:14px 20px;flex:1;display:flex;align-items:center;border-radius:0 8px 8px 0}
+.field{margin-bottom:22px}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px}
+.field .hint{font-size:12px;color:var(--sub);line-height:1.6;margin-bottom:10px;display:block;border-left:2px solid var(--border2);padding-left:10px}
+.field .exemplo{font-size:12px;color:var(--hint);font-style:italic;margin-bottom:10px;display:block;padding:8px 12px;background:rgba(101,28,242,0.05);border-radius:6px;border:1px dashed var(--border)}
+.field input[type=text],.field textarea,.field select{width:100%;background:rgba(15,15,26,0.9);border:1px solid var(--border);border-left:2px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:11px 14px;outline:none;resize:vertical;transition:border-color 0.2s,box-shadow 0.2s,background 0.2s}
+.field input:focus,.field textarea:focus{border-color:var(--purple);border-left-color:var(--purple);background:rgba(101,28,242,0.06);box-shadow:0 0 0 3px rgba(101,28,242,0.12),0 0 20px rgba(101,28,242,0.08)}
+.field input::placeholder,.field textarea::placeholder{color:var(--hint);font-style:italic}
+.dynamic-list{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+.dynamic-row{display:flex;gap:8px;align-items:flex-start}
+.dynamic-row input,.dynamic-row textarea{flex:1;background:rgba(15,15,26,0.9);border:1px solid var(--border);border-left:2px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;resize:vertical;transition:border-color 0.2s,background 0.2s}
+.dynamic-row input:focus,.dynamic-row textarea:focus{border-color:var(--purple);background:rgba(101,28,242,0.06)}
+.dynamic-row input::placeholder,.dynamic-row textarea::placeholder{color:var(--hint);font-style:italic}
+.btn-remove{background:transparent;border:1px solid var(--border);color:var(--hint);width:32px;height:36px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:border-color 0.2s,color 0.2s}
+.btn-remove:hover{border-color:var(--red);color:var(--red)}
+.btn-add{background:rgba(101,28,242,0.08);border:1px dashed var(--border2);color:var(--purple);font-family:'DM Sans',sans-serif;font-size:13px;padding:9px 18px;border-radius:7px;cursor:pointer;transition:background 0.2s,border-color 0.2s;width:100%}
+.btn-add:hover{background:rgba(101,28,242,0.15);border-color:var(--purple)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.two-col input{background:rgba(15,15,26,0.9);border:1px solid var(--border);border-left:2px solid var(--border2);border-radius:7px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color 0.2s,background 0.2s;width:100%}
+.two-col input:focus{border-color:var(--purple);background:rgba(101,28,242,0.06)}
+.two-col input::placeholder{color:var(--hint);font-style:italic}
+.form-table{width:100%;border-collapse:collapse;border-radius:8px;overflow:hidden;border:1px solid var(--border)}
+.form-table th{background:linear-gradient(90deg,var(--violet),var(--purple));color:var(--white);font-family:'Orbitron',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;padding:12px 14px;text-align:left}
+.form-table td{padding:3px;border-bottom:1px solid var(--border);background:rgba(15,15,26,0.8)}
+.form-table tr:nth-child(even) td{background:rgba(26,26,40,0.6)}
+.form-table td input{width:100%;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:9px 12px;outline:none;transition:background 0.15s}
+.form-table td input::placeholder{color:var(--hint);font-style:italic}
+.form-table td input:focus{background:rgba(101,28,242,0.08)}
+.priority-section{margin-bottom:52px;opacity:0;transform:translateY(28px);transition:opacity 0.6s ease,transform 0.6s cubic-bezier(0.16,1,0.3,1)}
+.priority-section.visible{opacity:1;transform:none}
+.priority-intro{background:rgba(14,14,24,0.9);border:1px solid var(--border2);border-left:4px solid var(--electric);border-radius:10px;padding:22px 26px;margin-bottom:26px;backdrop-filter:blur(8px)}
+.priority-intro h3{font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;color:var(--electric);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px}
+.priority-intro p{font-size:13px;color:var(--sub);line-height:1.7;margin-bottom:7px}
+.priority-intro p:last-child{margin-bottom:0}
+.priority-intro .hl{color:var(--purple);font-weight:500}
+.priority-block{border-radius:10px;overflow:hidden;margin-bottom:18px;border:1px solid var(--border);transition:border-color 0.3s,box-shadow 0.3s}
+.priority-block:hover{border-color:var(--border2);box-shadow:0 0 20px rgba(101,28,242,0.1)}
+.priority-block-header{padding:14px 20px;display:flex;flex-direction:column;gap:4px}
+.priority-block-header .tag{font-size:13px;font-weight:600}
+.priority-block-header .sub{font-size:12px;font-style:italic;opacity:0.75;margin-top:2px}
+.priority-block-body{padding:14px 20px 18px;background:rgba(15,15,26,0.7);border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.priority-block-body .hint-line{font-size:11px;color:var(--hint);font-style:italic;margin-bottom:4px}
+.pb-red .priority-block-header{background:var(--redbg);color:var(--red)}
+.pb-yellow .priority-block-header{background:var(--yellowbg);color:var(--yellow)}
+.pb-green .priority-block-header{background:var(--greenbg);color:var(--green)}
+.pb-orange .priority-block-header{background:var(--orangebg);color:var(--orange)}
+.priority-item{display:flex;align-items:stretch;border-radius:6px;overflow:hidden;border:1px solid var(--border);transition:border-color 0.2s}
+.priority-item:focus-within{border-color:var(--purple)}
+.priority-item .item-label{background:rgba(26,26,40,0.8);padding:10px 14px;font-size:12px;color:var(--sub);display:flex;align-items:center;white-space:nowrap;border-right:1px solid var(--border);flex:0 0 auto;max-width:220px}
+.priority-item input{flex:1;background:transparent;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;min-width:0;transition:background 0.15s}
+.priority-item input:focus{background:rgba(101,28,242,0.05)}
+.priority-item input::placeholder{color:var(--hint);font-style:italic}
+.pb-red .priority-item{border-left:2px solid var(--red)}
+.pb-yellow .priority-item{border-left:2px solid var(--yellow)}
+.pb-green .priority-item{border-left:2px solid var(--green)}
+.pb-orange .priority-item{border-left:2px solid var(--orange)}
+.extra-field{display:flex;align-items:center;gap:8px;padding:4px 0}
+.extra-field input{flex:1;background:rgba(20,20,32,0.6);border:1px dashed var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;outline:none;transition:border-color 0.2s}
+.extra-field input:focus{border-color:var(--purple)}
+.extra-field input::placeholder{color:var(--hint);font-style:italic}
+.extra-label{font-size:11px;color:var(--hint);white-space:nowrap}
+.empresa-field{background:rgba(101,28,242,0.06);border:1px solid var(--border2);border-radius:12px;padding:24px 28px;margin-bottom:44px;animation:slideIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.2s both}
+.empresa-field label{font-family:'Orbitron',sans-serif;font-size:12px;font-weight:700;color:var(--white);letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:6px}
+.empresa-field .hint{font-size:12px;color:var(--sub);margin-bottom:12px;display:block}
+.empresa-field input{width:100%;background:rgba(8,8,16,0.8);border:1px solid var(--border2);border-radius:8px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;padding:14px 18px;outline:none;transition:border-color 0.2s,box-shadow 0.2s}
+.empresa-field input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(101,28,242,0.15),0 0 30px rgba(101,28,242,0.1)}
+.empresa-field input::placeholder{color:var(--hint);font-style:italic;font-weight:400}
+.submit-area{margin-top:52px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.btn-submit{background:linear-gradient(135deg,var(--violet),var(--purple),var(--electric));color:var(--white);border:none;font-family:'Orbitron',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;padding:18px 52px;border-radius:9px;cursor:pointer;position:relative;overflow:hidden;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 24px rgba(101,28,242,0.3)}
+.btn-submit:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(101,28,242,0.5)}
+.btn-submit:active{transform:translateY(-1px)}
+.btn-submit:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.submit-note{font-size:12px;color:var(--hint);text-align:center}
+footer{position:relative;z-index:2;border-top:1px solid var(--border);padding:22px 40px;text-align:center;font-size:12px;color:var(--hint);display:flex;align-items:center;justify-content:center;gap:8px}
+footer .dot{color:var(--purple)}
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:var(--surface)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--purple)}
+@keyframes ringRotate{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes dotPulse{0%,100%{opacity:0.3;transform:scale(0.7)}50%{opacity:1;transform:scale(1.1)}}
+@keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1}100%{transform:translateY(300px) rotate(720deg);opacity:0}}
+@media(max-width:640px){
+  .wrapper{padding:24px 16px 60px}
+  .header-inner{padding:18px 16px;flex-direction:column;align-items:flex-start}
+  .two-col{grid-template-columns:1fr}
+  .priority-item .item-label{max-width:140px;font-size:11px}
+}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+<canvas id="canvas"></canvas>
+<div id="progressBar"></div>
+
+<header>
+  <div class="header-inner">
+    <div class="logo-area">
+      <img src="data:image/png;base64,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" class="logo-img" alt="A5 ECO">
+      <div><div class="logo-name">A5 <span>ECO</span>®</div></div>
+    </div>
+    <div class="header-right">
+      <h1>Base de Conhecimento</h1>
+      <p>Template de Preenchimento</p>
+    </div>
+  </div>
+  <div class="header-line"></div>
+</header>
+
+<div class="wrapper">
+
+<div class="intro-card">
+  <h2>Antes de começar — leia com atenção</h2>
+  <p>Este formulário vai coletar tudo o que o seu agente de atendimento com IA precisa saber para funcionar da forma certa no seu negócio.</p>
+  <p><strong>Pense assim:</strong> você está contratando um novo funcionário. Quanto mais você explica sobre como sua empresa funciona, como você atende, o que pode e o que não pode ser dito — melhor esse funcionário vai performar desde o primeiro dia.</p>
+  <p><span class="hl">Não existe resposta errada.</span> Escreva como você fala, sem preocupação com termos técnicos. Se tiver dúvida em algum campo, leia o exemplo abaixo dele — ele vai te dar o caminho.</p>
+</div>
+
+<div class="howto-card">
+  <h3>📋 Como preencher</h3>
+  <ul>
+    <li>Preencha campo por campo, sem pressa. Cada detalhe vai fazer diferença no resultado final.</li>
+    <li>Se algo não se aplica ao seu negócio, escreva <em>"não se aplica"</em> — não deixe em branco.</li>
+    <li>Nos campos com botão <strong>"+ Adicionar"</strong>, você pode incluir quantas linhas quiser.</li>
+    <li>Ao final, clique em <strong>"Gerar Documento"</strong> — o Google Doc será criado automaticamente.</li>
+  </ul>
+</div>
+
+<form id="mainForm">
+
+<!-- IDENTIFICAÇÃO -->
+<div class="empresa-field">
+  <label>Nome da empresa</label>
+  <span class="hint">Será o título do documento gerado. Use o nome como seus clientes conhecem.</span>
+  <input type="text" name="empresa_nome" placeholder="Ex: Barbearia do João, Clínica Saúde Plena, Construtora Horizonte…" required>
+</div>
+
+<div class="empresa-field" style="margin-top:-32px">
+  <label>Qual será o nome da sua IA?</label>
+  <span class="hint">Esse é o nome que a inteligência artificial vai usar para se apresentar aos seus clientes. Pode ser um nome comum, um apelido ou algo ligado à sua marca.</span>
+  <span class="exemplo">Exemplos: "Sofia", "Max", "Assistente da Clínica Saúde Plena", "Atendente Virtual da Barbearia do João"</span>
+  <input type="text" name="nome_ia" placeholder="Ex: Sofia, Max, Ana, Lucas…">
+</div>
+
+<!-- 1 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">1</div><div class="section-title">Sobre a Empresa</div></div>
+
+  <div class="field">
+    <label>Quem é a empresa?</label>
+    <span class="hint">Apresente sua empresa como você faria para um cliente novo. Fale o que você faz, há quanto tempo está no mercado e qual é o seu foco principal.</span>
+    <span class="exemplo">Exemplo: "Somos a Clínica Saúde Plena, fundada em 2018 em São Paulo. Somos especializados em saúde preventiva e atendemos famílias que buscam qualidade de vida. Temos uma equipe de 12 profissionais de saúde."</span>
+    <textarea name="quem_empresa" rows="4" placeholder="Escreva aqui como você apresentaria sua empresa para um cliente que nunca ouviu falar de você…"></textarea>
+  </div>
+
+  <div class="field">
+    <label>O que a empresa faz na prática?</label>
+    <span class="hint">Explique de forma simples qual problema você resolve e como você ajuda seus clientes no dia a dia. Evite termos técnicos — fale como você explicaria para um amigo.</span>
+    <span class="exemplo">Exemplo: "A gente ajuda pessoas que estão sempre cansadas, com dores ou sem energia a descobrir o que está causando isso e tratar de forma natural. Fazemos exames, consultas e acompanhamento mensal."</span>
+    <textarea name="o_que_faz" rows="4" placeholder="Qual problema você resolve? Como você faz isso na prática?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Quem é o seu cliente ideal?</label>
+    <span class="hint">Descreva o perfil de quem você atende melhor — e também quem NÃO é o seu cliente ideal. Isso ajuda a IA a qualificar os contatos desde o primeiro momento.</span>
+    <span class="exemplo">Exemplo: "Atendemos adultos entre 30 e 60 anos que se preocupam com saúde e têm condições de pagar por plano particular. Não atendemos crianças nem emergências médicas."</span>
+    <textarea name="para_quem" rows="4" placeholder="Quem é o cliente que mais se beneficia do que você oferece? E quem não é o seu cliente?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>O que faz a sua empresa ser diferente?</label>
+    <span class="hint">Por que um cliente deveria escolher você e não a concorrência? Pode ser o atendimento, a especialidade, a localização, o preço, a experiência — qualquer coisa que seja real e genuína.</span>
+    <span class="exemplo">Exemplo: "Somos a única clínica da região com médico disponível via WhatsApp para dúvidas rápidas sem custo adicional. Nosso tempo médio de espera é de 2 dias — enquanto a concorrência leva 2 semanas."</span>
+    <textarea name="diferenciais" rows="3" placeholder="O que você tem que os concorrentes não têm ou não fazem tão bem?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>O que a empresa NÃO faz ou NÃO atende?</label>
+    <span class="hint">Liste tudo o que está fora do seu escopo de atuação. Isso evita frustração do cliente e perda de tempo da sua equipe com contatos que não vão virar negócio.</span>
+    <span class="exemplo">Exemplo: "Não fazemos atendimento de emergência. Não aceitamos convênios. Não realizamos cirurgias. Não atendemos menores de 18 anos sem responsável presente."</span>
+    <textarea name="nao_faz" rows="3" placeholder="O que as pessoas costumam pedir que você NÃO faz ou NÃO oferece?"></textarea>
+  </div>
+</div>
+
+<!-- 2 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">2</div><div class="section-title">Serviços e Soluções</div></div>
+
+  <div class="field">
+    <label>Quais são os seus serviços ou produtos? <span style="font-weight:400;color:var(--sub)">(preencha os que se aplicam)</span></label>
+    <span class="hint">Para cada serviço ou produto, explique o que é, o que o cliente recebe e para quem ele é mais indicado. Seja específico — quanto mais detalhe, melhor a IA vai entender.</span>
+    <table class="form-table" style="margin-bottom:8px">
+      <thead><tr><th style="width:28%">Nome do serviço/produto</th><th style="width:42%">O que o cliente recebe</th><th style="width:30%">Para quem é indicado</th></tr></thead>
+      <tbody id="srvBody">
+        <tr><td><input type="text" name="srv1_nome" placeholder="Ex: Consulta inicial"></td><td><input type="text" name="srv1_desc" placeholder="Ex: 1h com médico, exame clínico completo e plano de saúde personalizado"></td><td><input type="text" name="srv1_para" placeholder="Ex: Quem nunca foi atendido na clínica"></td></tr>
+        <tr><td><input type="text" name="srv2_nome" placeholder="Ex: Acompanhamento mensal"></td><td><input type="text" name="srv2_desc" placeholder="Ex: Consulta de retorno, análise de exames e ajuste do tratamento"></td><td><input type="text" name="srv2_para" placeholder="Ex: Pacientes em tratamento ativo"></td></tr>
+        <tr><td><input type="text" name="srv3_nome" placeholder=""></td><td><input type="text" name="srv3_desc" placeholder=""></td><td><input type="text" name="srv3_para" placeholder=""></td></tr>
+        <tr><td><input type="text" name="srv4_nome" placeholder=""></td><td><input type="text" name="srv4_desc" placeholder=""></td><td><input type="text" name="srv4_para" placeholder=""></td></tr>
+      </tbody>
+    </table>
+    <button type="button" class="btn-add" onclick="addSrvRow()">+ Adicionar serviço ou produto</button>
+  </div>
+
+  <div class="field">
+    <label>Tem algum serviço que as pessoas confundem com o seu mas que você NÃO faz?</label>
+    <span class="hint">Muito importante para evitar que a IA gere expectativas erradas. Pense no que os clientes pedem que você não oferece.</span>
+    <span class="exemplo">Exemplo: "Muitos perguntam se fazemos exames de sangue aqui — não fazemos, só interpretamos resultados. Também não fazemos atendimento via plano de saúde."</span>
+    <textarea name="confusao_servicos" rows="3" placeholder="O que as pessoas costumam pedir pensando que você oferece, mas que não é o seu serviço?"></textarea>
+  </div>
+</div>
+
+<!-- 3 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">3</div><div class="section-title">Como Funciona o Atendimento</div></div>
+
+  <div class="field">
+    <label>Descreva o passo a passo do seu atendimento — do primeiro contato até o encaminhamento</label>
+    <span class="hint">Esse campo é muito importante. Descreva exatamente como você quer que a IA conduza a conversa: o que ela pergunta primeiro, o que ela pergunta depois, em que momento ela encaminha para o time humano. Seja detalhado — esse é o roteiro que a IA vai seguir.</span>
+    <span class="exemplo">Exemplo: "1. Cliente manda mensagem. A IA se apresenta e pergunta o nome. 2. Pergunta qual serviço ele está buscando (consulta, retorno ou outro). 3. Se for consulta: pergunta se é primeira vez ou já foi paciente. 4. Pergunta qual o principal incômodo ou objetivo. 5. Informa que vai verificar agenda e encaminha para a atendente humana com todas essas informações."</span>
+    <textarea name="processo_atendimento" rows="7" placeholder="Escreva aqui o roteiro que você quer que a IA siga, etapa por etapa, até o momento em que ela passa para o time humano…"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Quais situações a IA NUNCA deve resolver sozinha e deve encaminhar imediatamente?</label>
+    <span class="hint">Pense em situações que exigem julgamento humano, decisão comercial ou sensibilidade — a IA deve reconhecer e passar para o time sem hesitar.</span>
+    <span class="exemplo">Exemplo: "Qualquer reclamação. Clientes que mencionam urgência ou dor forte. Pedidos de desconto ou condições especiais de pagamento. Clientes antigos que pedem falar com o médico diretamente."</span>
+    <textarea name="decisoes_humanas" rows="3" placeholder="Em quais situações a IA deve parar e chamar um humano imediatamente?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Quando a IA deve encaminhar o cliente para o time? (cenários específicos)</label>
+    <span class="hint">Além do fluxo normal, existem situações específicas que devem acionar o encaminhamento imediato. Liste todas que você conseguir pensar.</span>
+    <span class="exemplo">Exemplo: "Se mencionar o nome de algum médico específico da clínica → encaminhar para a recepção. Se disser que é indicação do Dr. Carlos → tratar como VIP e encaminhar direto. Se mencionar que já tentou marcar antes e não conseguiu → prioridade, chamar humano. Se demonstrar raiva ou frustração em qualquer momento → chamar humano imediatamente."</span>
+    <textarea name="quando_encaminhar" rows="5" placeholder="Liste os gatilhos específicos que fazem a IA encaminhar o cliente para o time humano…"></textarea>
+  </div>
+</div>
+
+<!-- 4 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">4</div><div class="section-title">Horários e Canais de Contato</div></div>
+
+  <div class="field">
+    <label>Dias e horários de atendimento</label>
+    <span class="hint">Seja específico. Se tiver horários diferentes em dias diferentes, informe tudo.</span>
+    <span class="exemplo">Exemplo: "Segunda a sexta das 8h às 18h. Sábado das 8h ao meio-dia. Fechado aos domingos e feriados."</span>
+    <input type="text" name="horarios" placeholder="Ex: Segunda a sexta das 9h às 18h, sábado das 9h ao meio-dia">
+  </div>
+
+  <div class="field">
+    <label>O que acontece quando o cliente manda mensagem fora do horário?</label>
+    <span class="hint">A IA precisa saber o que dizer quando alguém entra em contato fora do horário comercial.</span>
+    <span class="exemplo">Exemplo: "A IA responde automaticamente: 'Olá! Nosso atendimento funciona de segunda a sexta das 8h às 18h. Recebi sua mensagem e nossa equipe vai retornar assim que abrirmos. Se for urgente, deixe seu telefone que entramos em contato.'"</span>
+    <textarea name="fora_horario" rows="3" placeholder="O que a IA deve dizer para quem entrar em contato fora do horário?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Canais oficiais de contato</label>
+    <table class="form-table">
+      <thead><tr><th style="width:30%">Canal</th><th>Endereço / Número</th></tr></thead>
+      <tbody>
+        <tr><td><input type="text" value="WhatsApp" readonly style="color:var(--sub)"></td><td><input type="text" name="canal_whatsapp" placeholder="+55 (XX) XXXXX-XXXX"></td></tr>
+        <tr><td><input type="text" value="Telefone" readonly style="color:var(--sub)"></td><td><input type="text" name="canal_telefone" placeholder="+55 (XX) XXXX-XXXX"></td></tr>
+        <tr><td><input type="text" value="E-mail" readonly style="color:var(--sub)"></td><td><input type="text" name="canal_email" placeholder="contato@suaempresa.com"></td></tr>
+        <tr><td><input type="text" value="Site" readonly style="color:var(--sub)"></td><td><input type="text" name="canal_site" placeholder="www.suaempresa.com.br"></td></tr>
+        <tr><td><input type="text" value="Instagram" readonly style="color:var(--sub)"></td><td><input type="text" name="canal_instagram" placeholder="@suaempresa"></td></tr>
+        <tr><td><input type="text" name="canal_outro_nome" placeholder="Outro canal…"></td><td><input type="text" name="canal_outro_end" placeholder="Endereço ou número"></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 5 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">5</div><div class="section-title">Pagamentos e Condições</div></div>
+
+  <div class="field">
+    <label>Quais formas de pagamento vocês aceitam?</label>
+    <span class="hint">Liste todas as formas disponíveis para que a IA possa informar corretamente quando perguntada.</span>
+    <span class="exemplo">Exemplo: "PIX (preferencial), cartão de débito e crédito (até 6x sem juros), dinheiro. Não aceitamos cheque nem boleto bancário."</span>
+    <textarea name="formas_pagamento" rows="2" placeholder="Ex: PIX, cartão de crédito em até 12x, boleto bancário, dinheiro…"></textarea>
+  </div>
+
+  <div class="field">
+    <label>A IA pode informar valores ao cliente? Como isso funciona?</label>
+    <span class="hint">Esse ponto é muito importante. Defina claramente qual é o papel da IA em relação a preços — ela pode falar valores, deve só passar para o time, ou existe um meio-termo?</span>
+    <span class="exemplo">Opção 1 — IA informa o valor: "Sim, a IA pode informar os valores. Consulta inicial: R$280. Retorno: R$180. Pacote mensal: R$450."
+Opção 2 — IA não informa: "Não. A IA deve dizer que os valores dependem de uma avaliação e que o time vai apresentar uma proposta personalizada."
+Opção 3 — IA informa faixa: "A IA pode dizer que os serviços começam a partir de R$180, mas o valor exato só é informado pelo time após entender a necessidade do cliente."</span>
+    <textarea name="como_valores" rows="4" placeholder="A IA pode falar sobre preços? Se sim, quais são? Se não, o que ela deve dizer quando o cliente perguntar?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>A empresa emite nota fiscal? Atende pessoa física, jurídica ou ambas?</label>
+    <textarea name="nota_fiscal" rows="2" placeholder="Ex: Emitimos NF-e para pessoa jurídica. Atendemos PF e PJ. Não emitimos recibo."></textarea>
+  </div>
+</div>
+
+<!-- 6 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">6</div><div class="section-title">Regras e Limites</div></div>
+
+  <div class="field">
+    <label>Quais são as regras da sua empresa que nunca podem ser quebradas?</label>
+    <span class="hint">Pense em situações que já geraram problema ou confusão no passado — cliente que tentou negociar algo que você não pode ceder, situação que causou mal-entendido. Quanto mais regras você listar aqui, menos dor de cabeça vai ter depois.</span>
+    <span class="exemplo">Exemplos de regras comuns: "Não começamos nenhum trabalho sem contrato ou pagamento adiantado." / "Não damos desconto sem autorização da gerência." / "Não atendemos sem agendamento prévio, nem por indicação." / "Não prometemos resultados nem prazos antes da avaliação." / "Não aceitamos cancelamentos com menos de 24h de antecedência sem cobrança de taxa."</span>
+    <textarea name="regras" rows="5" placeholder="Liste as regras que sua equipe nunca pode quebrar — nem a IA, nem o atendente humano…"></textarea>
+  </div>
+
+  <div class="field">
+    <label>O que a IA NÃO pode informar sem uma avaliação ou confirmação do time?</label>
+    <span class="hint">Existem informações que só podem ser dadas depois de analisar o caso, assinar contrato ou consultar internamente. Liste o que a IA deve evitar responder por conta própria.</span>
+    <span class="exemplo">Exemplo: "Prazo de entrega — só informar após análise do projeto." / "Valor exato do serviço — só após proposta formal." / "Se temos vaga na agenda — só a recepcionista confirma." / "Diagnóstico ou opinião sobre o caso do cliente — nunca."</span>
+    <textarea name="limite_info" rows="3" placeholder="O que a IA deve dizer que 'não pode responder por aqui' e direcionar para o time?"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Sua empresa faz algum tipo de garantia, promessa de resultado ou prazo?</label>
+    <span class="hint">Se sim, qual é e como funciona? Se não faz nenhuma promessa, deixe claro aqui também — para a IA não criar expectativas que você não pode cumprir.</span>
+    <span class="exemplo">Exemplo com garantia: "Garantimos satisfação nos primeiros 7 dias. Se não gostar, devolvemos o valor integral."
+Exemplo sem garantia: "Não fazemos promessa de resultados. Cada caso é único e os resultados dependem de vários fatores. O que garantimos é dedicação total ao longo do processo."</span>
+    <textarea name="garantias" rows="3" placeholder="Tem garantia? Qual é? Se não tem, como a IA deve responder quando o cliente perguntar sobre isso?"></textarea>
+  </div>
+</div>
+
+<!-- 7 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">7</div><div class="section-title">Perguntas Frequentes</div></div>
+
+  <div class="field">
+    <label>Quais perguntas os clientes fazem com mais frequência?</label>
+    <span class="hint">Pense nas perguntas que você ou sua equipe respondem todo dia. Quanto mais você listar, mais preparada a IA estará para responder sem precisar acionar o time humano.</span>
+    <div id="faqList" class="dynamic-list"></div>
+    <button type="button" class="btn-add" onclick="addFaq()">+ Adicionar pergunta frequente</button>
+  </div>
+</div>
+
+<!-- 8 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">8</div><div class="section-title">Principais Objeções</div></div>
+
+  <div class="field">
+    <label>Quais objeções os clientes costumam ter antes de fechar? E como você costuma responder?</label>
+    <span class="hint">Objeção é quando o cliente levanta uma dúvida ou resistência antes de comprar — "está caro", "vou pensar", "preciso falar com meu marido", "já tentei algo parecido e não funcionou". A IA precisa saber como lidar com cada uma delas.</span>
+    <span class="exemplo">Exemplo:
+Objeção: "Está caro demais."
+Resposta: "Entendo. Nossos valores refletem a qualidade e personalização do atendimento. Além disso, temos opções de parcelamento. Posso te contar um pouco mais sobre o que está incluído?"
+
+Objeção: "Vou pensar e te aviso."
+Resposta: "Claro, sem pressão! Só quero deixar uma informação: as vagas são limitadas e costumam fechar rápido. Se quiser, posso reservar uma data para você enquanto pensa — sem compromisso."</span>
+    <div id="objList" class="dynamic-list"></div>
+    <button type="button" class="btn-add" onclick="addObj()">+ Adicionar objeção</button>
+  </div>
+</div>
+
+<!-- 9 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">9</div><div class="section-title">Glossário</div></div>
+
+  <div class="field">
+    <label>Existe algum termo técnico, gíria do setor ou expressão interna que seus clientes usam e que precisa ser explicado?</label>
+    <span class="hint">Isso ajuda a IA a entender o que o cliente está pedindo mesmo que use palavras diferentes. Pense em termos do seu setor, abreviações ou nomes de procedimentos.</span>
+    <div id="glossList" class="dynamic-list"></div>
+    <button type="button" class="btn-add" onclick="addGloss()">+ Adicionar termo</button>
+  </div>
+</div>
+
+<!-- 10 -->
+<div class="section">
+  <div class="section-header"><div class="section-num">10</div><div class="section-title">Informações Adicionais</div></div>
+
+  <div class="field">
+    <label>Tem alguma informação importante que não se encaixou em nenhum campo acima?</label>
+    <textarea name="info_adicional" rows="3" placeholder="Fique à vontade para adicionar qualquer detalhe que achar relevante para o funcionamento da IA…"></textarea>
+  </div>
+
+  <div class="field">
+    <label>Existe algum assunto delicado que a IA deve tratar com muito cuidado?</label>
+    <span class="hint">Pense em situações emocionalmente sensíveis, restrições legais do seu setor, concorrentes que não devem ser mencionados, etc.</span>
+    <span class="exemplo">Exemplo: "Não citar concorrentes pelo nome. Se o cliente mencionar que está passando por dificuldades financeiras, tratar com sensibilidade e oferecer opções de parcelamento antes de falar em valor. Nunca dar opinião sobre diagnósticos de outros profissionais."</span>
+    <textarea name="temas_sensiveis" rows="3" placeholder="Quais assuntos a IA deve abordar com cuidado extra ou evitar completamente?"></textarea>
+  </div>
+</div>
+
+<!-- 11 -->
+<div class="priority-section">
+  <div class="section-header"><div class="section-num">11</div><div class="section-title">O Que a IA Deve Coletar do Cliente</div></div>
+
+  <div class="priority-intro">
+    <h3>Como funciona essa seção?</h3>
+    <p>Aqui você define exatamente quais informações a IA precisa coletar antes de encaminhar o cliente para o time humano. Os campos estão divididos por prioridade — do mais urgente ao complementar.</p>
+    <p><span class="hl">Dica:</span> pense no que você já sabe sobre um cliente antes de atendê-lo. Qual informação muda tudo? Qual é o mínimo que você precisa saber para passar para o próximo passo?</p>
+    <p>Os campos abaixo já vêm com sugestões — edite, apague ou adicione conforme a realidade do seu negócio.</p>
+  </div>
+
+  <div class="priority-block pb-red">
+    <div class="priority-block-header">
+      <div class="tag">🔴 ESSENCIAL — A IA NÃO encaminha sem essas informações</div>
+      <div class="sub">São os dados mínimos sem os quais é impossível dar continuidade. Se o cliente não informar, a IA deve pedir novamente antes de avançar.</div>
+    </div>
+    <div class="priority-block-body">
+      <div class="hint-line">Edite conforme seu negócio. Apague o que não faz sentido e adicione o que falta.</div>
+      <div class="priority-item"><span class="item-label">Nome</span><input type="text" name="ess1" value="Nome e como prefere ser chamado"></div>
+      <div class="priority-item"><span class="item-label">É cliente?</span><input type="text" name="ess2" value="Se é cliente novo ou já foi atendido antes"></div>
+      <div class="priority-item"><span class="item-label">O que busca</span><input type="text" name="ess3" value="Qual serviço, produto ou solução está buscando"></div>
+      <div class="priority-item"><span class="item-label">Necessidade</span><input type="text" name="ess4" value="Qual é o principal problema ou objetivo do cliente"></div>
+      <div class="extra-field"><span class="extra-label">+ Essencial:</span><input type="text" name="ess5" placeholder="Adicione um campo essencial específico do seu negócio…"></div>
+      <div class="extra-field"><input type="text" name="ess6" placeholder="Mais um campo essencial (se necessário)…"></div>
+    </div>
+  </div>
+
+  <div class="priority-block pb-yellow">
+    <div class="priority-block-header">
+      <div class="tag">🟡 IMPORTANTE — Coletar sempre que possível</div>
+      <div class="sub">Ajudam muito na qualificação, mas se o cliente não quiser responder, a IA pode seguir em frente mesmo assim.</div>
+    </div>
+    <div class="priority-block-body">
+      <div class="hint-line">Edite conforme seu negócio.</div>
+      <div class="priority-item"><span class="item-label">Há quanto tempo</span><input type="text" name="imp1" value="Há quanto tempo tem essa necessidade ou está pensando nisso"></div>
+      <div class="priority-item"><span class="item-label">Já tentou</span><input type="text" name="imp2" value="Se já tentou alguma solução antes e o que aconteceu"></div>
+      <div class="priority-item"><span class="item-label">Documentos</span><input type="text" name="imp3" value="Se possui documentos, exames, fotos ou materiais relevantes"></div>
+      <div class="extra-field"><span class="extra-label">+ Importante:</span><input type="text" name="imp4" placeholder="Adicione um campo importante do seu negócio…"></div>
+      <div class="extra-field"><input type="text" name="imp5" placeholder="Mais um campo importante (se necessário)…"></div>
+    </div>
+  </div>
+
+  <div class="priority-block pb-green">
+    <div class="priority-block-header">
+      <div class="tag">🟢 COMPLEMENTAR — Coletar se surgir naturalmente</div>
+      <div class="sub">Informações que enriquecem o atendimento, mas que a IA não precisa pedir diretamente — só registrar se o cliente mencionar.</div>
+    </div>
+    <div class="priority-block-body">
+      <div class="hint-line">Edite conforme seu negócio.</div>
+      <div class="priority-item"><span class="item-label">Como chegou</span><input type="text" name="comp1" value="Como ficou sabendo da empresa (indicação, Instagram, Google…)"></div>
+      <div class="priority-item"><span class="item-label">Expectativas</span><input type="text" name="comp2" value="O que espera do atendimento ou do resultado"></div>
+      <div class="extra-field"><span class="extra-label">+ Complementar:</span><input type="text" name="comp3" placeholder="Adicione um campo complementar do seu negócio…"></div>
+    </div>
+  </div>
+
+  <div class="priority-block pb-orange">
+    <div class="priority-block-header">
+      <div class="tag">⚠️ PONTOS DE ATENÇÃO — Gatilhos que mudam tudo</div>
+      <div class="sub">Situações específicas que, quando mencionadas pelo cliente, devem mudar completamente a conduta da IA.</div>
+    </div>
+    <div class="priority-block-body">
+      <div class="hint-line">Descreva os gatilhos e o que a IA deve fazer em cada caso.</div>
+      <div class="field" style="margin-bottom:10px">
+        <span class="exemplo">Exemplo: "Se mencionar o nome de algum médico da clínica → encaminhar imediatamente para a recepção. / Se disser que é indicação direta de um parceiro → tratar como VIP. / Se demonstrar raiva ou frustração → parar tudo e chamar atendente humano. / Se perguntar sobre desconto → não responder e direcionar para o time."</span>
+        <textarea name="atencao" rows="5" placeholder="Liste os gatilhos e o que a IA deve fazer em cada situação…"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="submit-area">
+  <button type="button" class="btn-submit" onclick="enviarFormulario()">Gerar Documento no Google Drive</button>
+  <p class="submit-note">O documento será criado no seu Drive e abrirá automaticamente em uma nova aba.</p>
+</div>
+
+</form>
+</div>
+
+<footer>
+  <span>A5 ECO©</span><span class="dot">•</span>
+  <span>www.a5ecossistema.com</span><span class="dot">•</span>
+  <span>Base de Conhecimento — Template de Preenchimento</span>
+</footer>
+
+<!-- LOADING -->
+<div id="loadingOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(8,8,16,0.92);backdrop-filter:blur(16px);align-items:center;justify-content:center;flex-direction:column;gap:32px">
+  <div style="position:relative;width:120px;height:120px">
+    <svg viewBox="0 0 120 120" style="position:absolute;inset:0;width:100%;height:100%;animation:ringRotate 1.8s linear infinite"><circle cx="60" cy="60" r="52" fill="none" stroke="#651cf2" stroke-width="2" stroke-linecap="round" stroke-dasharray="80 246" style="filter:drop-shadow(0 0 8px #651cf2)"/></svg>
+    <svg viewBox="0 0 120 120" style="position:absolute;inset:0;width:100%;height:100%;animation:ringRotate 2.4s linear infinite reverse"><circle cx="60" cy="60" r="40" fill="none" stroke="#4418b2" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="50 200" style="filter:drop-shadow(0 0 6px #4418b2)"/></svg>
+    <svg viewBox="0 0 120 120" style="position:absolute;inset:0;width:100%;height:100%;animation:ringRotate 1.2s linear infinite"><circle cx="60" cy="60" r="27" fill="none" stroke="#7f1def" stroke-width="1" stroke-linecap="round" stroke-dasharray="30 140" style="filter:drop-shadow(0 0 4px #7f1def)"/></svg>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+      <img src="data:image/png;base64,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" style="width:38px;height:38px;object-fit:contain;animation:logoPulse 1.5s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(101,28,242,0.8))">
+    </div>
+  </div>
+  <div style="text-align:center">
+    <div style="font-family:'Orbitron',sans-serif;font-size:14px;font-weight:700;color:#ffffff;letter-spacing:0.15em;text-transform:uppercase;margin-bottom:10px">Gerando documento</div>
+    <div id="loadingStepText" style="font-size:13px;color:#8888aa;min-height:20px;transition:opacity 0.4s"></div>
+  </div>
+  <div style="width:280px;height:2px;background:rgba(101,28,242,0.2);border-radius:2px;overflow:hidden">
+    <div id="loadBar" style="height:100%;width:0%;background:linear-gradient(90deg,#4418b2,#651cf2,#7f1def);border-radius:2px;transition:width 0.4s ease;box-shadow:0 0 12px #651cf2"></div>
+  </div>
+  <div style="display:flex;gap:8px">
+    <div style="width:6px;height:6px;border-radius:50%;background:#651cf2;animation:dotPulse 1.2s ease-in-out infinite;animation-delay:0s"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:#7f1def;animation:dotPulse 1.2s ease-in-out infinite;animation-delay:0.2s"></div>
+    <div style="width:6px;height:6px;border-radius:50%;background:#4418b2;animation:dotPulse 1.2s ease-in-out infinite;animation-delay:0.4s"></div>
+  </div>
+</div>
+
+<!-- SUCCESS -->
+<div id="successOverlay" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(8,8,16,0.92);backdrop-filter:blur(16px);align-items:center;justify-content:center">
+  <div id="successCard" style="background:#141420;border:1px solid #3d2f8a;border-top:3px solid #651cf2;border-radius:16px;padding:48px 44px;max-width:480px;width:90%;text-align:center;position:relative;overflow:hidden;transform:scale(0.8);opacity:0;transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1),opacity 0.4s ease">
+    <div id="successParticles" style="position:absolute;inset:0;pointer-events:none;overflow:hidden"></div>
+    <div style="position:relative;z-index:1">
+      <div id="successCheck" style="width:80px;height:80px;background:rgba(101,28,242,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;border:2px solid #651cf2;transform:scale(0);transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.3s;box-shadow:0 0 30px rgba(101,28,242,0.4)">
+        <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><path id="checkPath" d="M8 18 L15 25 L28 11" stroke="#651cf2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="40" stroke-dashoffset="40" style="transition:stroke-dashoffset 0.6s ease 0.6s"/></svg>
+      </div>
+      <h2 style="font-family:'Orbitron',sans-serif;font-size:16px;font-weight:700;color:#ffffff;letter-spacing:0.1em;margin-bottom:10px;text-transform:uppercase">Documento Criado!</h2>
+      <p style="font-size:14px;color:#8888aa;line-height:1.6;margin-bottom:28px">O Google Doc foi gerado no seu Drive e aberto em uma nova aba com toda a base de conhecimento organizada.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+        <a id="docLink" href="#" target="_blank" style="background:linear-gradient(135deg,#4418b2,#651cf2,#7f1def);color:#fff;border:none;font-family:'Orbitron',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:13px 26px;border-radius:8px;cursor:pointer;text-decoration:none;display:inline-block;transition:transform 0.2s,box-shadow 0.2s;box-shadow:0 4px 20px rgba(101,28,242,0.3)">Abrir Documento</a>
+        <button onclick="fecharSucesso()" style="background:transparent;color:#8888aa;border:1px solid #251f4a;font-family:'DM Sans',sans-serif;font-size:13px;padding:13px 26px;border-radius:8px;cursor:pointer;transition:border-color 0.2s">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9gnhEPDo8qTLQO359Sg_0u9R8R7W4OK4RnWHgoiS5lAYt5Hs5Ae94Sn3TV_3eVYt_/exec";
+
+// ── PARTÍCULAS ──
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let mouse = {x:0,y:0};
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight}
+resize();
+window.addEventListener('resize',resize);
+window.addEventListener('mousemove',e=>{mouse.x=e.clientX;mouse.y=e.clientY});
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*canvas.width;this.y=Math.random()*canvas.height;
+    this.size=Math.random()*1.5+0.3;this.speedX=(Math.random()-0.5)*0.4;this.speedY=(Math.random()-0.5)*0.4;
+    this.opacity=Math.random()*0.5+0.1;this.pulse=Math.random()*Math.PI*2;
+    this.color=Math.random()>0.6?'#651cf2':Math.random()>0.5?'#7f1def':'#4418b2';
+  }
+  update(){
+    this.pulse+=0.02;this.x+=this.speedX;this.y+=this.speedY;
+    const dx=mouse.x-this.x,dy=mouse.y-this.y,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<120){this.x-=dx*0.015;this.y-=dy*0.015}
+    if(this.x<0||this.x>canvas.width||this.y<0||this.y>canvas.height)this.reset();
+  }
+  draw(){
+    ctx.globalAlpha=this.opacity*(0.7+0.3*Math.sin(this.pulse));
+    ctx.fillStyle=this.color;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();
+  }
+}
+for(let i=0;i<120;i++)particles.push(new Particle());
+function drawConnections(){
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x,dy=particles[i].y-particles[j].y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<90){ctx.globalAlpha=(1-dist/90)*0.12;ctx.strokeStyle='#651cf2';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(particles[i].x,particles[i].y);ctx.lineTo(particles[j].x,particles[j].y);ctx.stroke()}
+    }
+  }
+}
+function animate(){ctx.clearRect(0,0,canvas.width,canvas.height);drawConnections();particles.forEach(p=>{p.update();p.draw()});ctx.globalAlpha=1;requestAnimationFrame(animate)}
+animate();
+
+// ── PROGRESS BAR ──
+window.addEventListener('scroll',()=>{
+  const pct=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100;
+  document.getElementById('progressBar').style.width=pct+'%';
+});
+
+// ── SCROLL REVEAL ──
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')});
+},{threshold:0.06});
+document.querySelectorAll('.section,.priority-section').forEach(el=>observer.observe(el));
+
+// ── CAMPOS DINÂMICOS ──
+let faqCount=0,objCount=0,glossCount=0,srvCount=4;
+
+function addFaq(){
+  faqCount++;
+  const div=document.createElement('div');
+  div.className='dynamic-row';
+  div.innerHTML=`
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+      <input type="text" name="faq${faqCount}_p" placeholder="Ex: Qual é o prazo de entrega? / Vocês atendem aos sábados?">
+      <textarea name="faq${faqCount}_r" rows="2" placeholder="Ex: Nosso prazo padrão é de 5 dias úteis após a aprovação do projeto."></textarea>
+    </div>
+    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('faqList').appendChild(div);
+}
+
+function addObj(){
+  objCount++;
+  const div=document.createElement('div');
+  div.className='dynamic-row';
+  div.innerHTML=`
+    <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+      <input type="text" name="obj${objCount}_o" placeholder="Ex: Está caro. / Preciso pensar. / Já tentei algo parecido e não funcionou.">
+      <textarea name="obj${objCount}_r" rows="2" placeholder="Ex: Entendo. Posso te mostrar o que está incluído no valor e as opções de parcelamento?"></textarea>
+    </div>
+    <button type="button" class="btn-remove" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('objList').appendChild(div);
+}
+
+function addGloss(){
+  glossCount++;
+  const div=document.createElement('div');
+  div.className='dynamic-row two-col';
+  div.innerHTML=`
+    <input type="text" name="gloss${glossCount}_t" placeholder="Termo ou expressão…">
+    <input type="text" name="gloss${glossCount}_d" placeholder="O que significa na prática…">
+    <button type="button" class="btn-remove" style="grid-column:span 1" onclick="this.parentElement.remove()">×</button>`;
+  document.getElementById('glossList').appendChild(div);
+}
+
+function addSrvRow(){
+  srvCount++;
+  const tr=document.createElement('tr');
+  tr.innerHTML=`<td><input type="text" name="srv${srvCount}_nome" placeholder="Nome do serviço/produto"></td><td><input type="text" name="srv${srvCount}_desc" placeholder="O que o cliente recebe…"></td><td><input type="text" name="srv${srvCount}_para" placeholder="Para quem é indicado…"></td>`;
+  document.getElementById('srvBody').appendChild(tr);
+}
+
+// Inicializa com 2 FAQs, 2 objeções e 2 termos de glossário
+addFaq();addFaq();
+addObj();addObj();
+addGloss();addGloss();
+
+// ── LOADING ──
+const loadingSteps=['Conectando ao Google Drive…','Criando estrutura do documento…','Organizando seções e conteúdo…','Aplicando identidade visual…','Configurando permissões de acesso…','Finalizando documento…'];
+function showLoading(){
+  document.getElementById('loadingOverlay').style.display='flex';
+  const bar=document.getElementById('loadBar'),stepEl=document.getElementById('loadingStepText');
+  bar.style.width='0%';stepEl.style.opacity='1';stepEl.textContent=loadingSteps[0];
+  let step=0;
+  const interval=setInterval(()=>{
+    step=Math.min(step+1,loadingSteps.length-1);
+    bar.style.width=Math.round((step/(loadingSteps.length-1))*85)+'%';
+    stepEl.style.opacity='0';
+    setTimeout(()=>{stepEl.textContent=loadingSteps[step];stepEl.style.opacity='1'},200);
+  },900);
+  return interval;
+}
+function hideLoading(interval){
+  clearInterval(interval);
+  document.getElementById('loadBar').style.width='100%';
+  setTimeout(()=>{document.getElementById('loadingOverlay').style.display='none'},400);
+}
+function showSuccess(url){
+  const overlay=document.getElementById('successOverlay'),card=document.getElementById('successCard');
+  overlay.style.display='flex';
+  setTimeout(()=>{card.style.transform='scale(1)';card.style.opacity='1'},50);
+  setTimeout(()=>{document.getElementById('successCheck').style.transform='scale(1)'},350);
+  setTimeout(()=>{document.getElementById('checkPath').style.strokeDashoffset='0'},600);
+  setTimeout(()=>launchConfetti(),700);
+  document.getElementById('docLink').href=url;
+}
+function launchConfetti(){
+  const container=document.getElementById('successParticles');
+  const colors=['#651cf2','#7f1def','#4418b2','#ffffff','#a855f7'];
+  for(let i=0;i<40;i++){
+    const el=document.createElement('div');
+    const size=Math.random()*8+4,color=colors[Math.floor(Math.random()*colors.length)];
+    const x=Math.random()*100,delay=Math.random()*0.8,dur=Math.random()*1.5+1.2;
+    el.style.cssText=`position:absolute;width:${size}px;height:${size}px;background:${color};border-radius:${Math.random()>0.5?'50%':'2px'};left:${x}%;top:-10px;opacity:0;animation:confettiFall ${dur}s ease-in ${delay}s forwards`;
+    container.appendChild(el);
+    setTimeout(()=>el.remove(),(delay+dur+0.1)*1000);
+  }
+}
+function fecharSucesso(){
+  const card=document.getElementById('successCard');
+  card.style.transform='scale(0.9)';card.style.opacity='0';
+  setTimeout(()=>{document.getElementById('successOverlay').style.display='none';card.style.transform='scale(0.8)'},300);
+}
+document.getElementById('successOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('successOverlay'))fecharSucesso()});
+
+// ── ENVIO ──
+async function enviarFormulario(){
+  const btn=document.querySelector('.btn-submit');
+  btn.disabled=true;btn.textContent='Processando…';
+  const interval=showLoading();
+  try{
+    const dados={};
+    document.getElementById('mainForm').querySelectorAll('[name]').forEach(el=>{dados[el.name]=el.value.trim()});
+    const resp=await fetch(APPS_SCRIPT_URL,{method:'POST',body:JSON.stringify(dados),headers:{'Content-Type':'text/plain'}});
+    const result=await resp.json();
+    hideLoading(interval);
+    if(result.ok&&result.url){window.open(result.url,'_blank');setTimeout(()=>showSuccess(result.url),450)}
+    else alert('Erro ao gerar documento: '+(result.erro||'Desconhecido'));
+  }catch(err){hideLoading(interval);alert('Erro de conexão: '+err.message)}
+  btn.textContent='Gerar Documento no Google Drive';btn.disabled=false;
+}
+</script>
+</body>
+</html>
